@@ -265,7 +265,7 @@ def run(protocol: protocol_api.ProtocolContext):
          p20.dispense(1, dest_tube.bottom(2))
          # p20.blow_out(dest_tube.top(-1.5))
          # p20.blow_out(dest_tube.top(-1)) 
-         p20.touch_tip(dest_tube.top(-0.5))
+         p20.touch_tip()
          p20.blow_out(dest_tube.top()) 
          p20.drop_tip()
 
