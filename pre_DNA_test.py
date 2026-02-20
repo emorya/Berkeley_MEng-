@@ -3,7 +3,7 @@ from opentrons import protocol_api
 from itertools import cycle
 
 metadata = {
-    "protocolName": "FULL RUN with Yifeng picklist for 384 plate",
+    "protocolName": "Liquid retention test: FULL RUN with Yifeng picklist for 384 plate",
     "author": "TiLab",
     "description": "1) Adding reagents to destination tube: TAE Buffer, Water, M18 Scaffold 2) Adding dna from Picklist to destination tube, Putting into Thermocycler, 3)Thermocycler to Gel Electrophoresis ",
 }
