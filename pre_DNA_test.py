@@ -227,7 +227,7 @@ def run(protocol: protocol_api.ProtocolContext):
 #     p20.drop_tip()
 
      # These are the coordinates of the DNA STAPLE picklist 
-     yifeng_wells = [
+    yifeng_wells = [
      source_384[w] for w in [
          "A2","A3","A5","A6","A7","A8","A9","A10","A11","A13","A14","A15","A16","A17","A18","A19","A20","A21","A22","A23","A24",
          "B4","B5","B6","B7","B8","B9","B10","B11","B13","B14","B15","B16","B17","B18","B19","B20","B21","B22","B23","B24",
