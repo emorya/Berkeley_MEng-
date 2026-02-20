@@ -260,7 +260,7 @@ def run(protocol: protocol_api.ProtocolContext):
          p20.move_to(well.top(z=10))
          p20.move_to(well.bottom(0.5), speed=20)
          p20.aspirate(1, well.bottom(0.5))
-         p20.move_to(well.top(), speed=60)
+         p20.move_to(well.top(), speed=20)
 
          p20.move_to(dest_tube.bottom(2), speed=80)
          p20.dispense(1, dest_tube.bottom(2))
