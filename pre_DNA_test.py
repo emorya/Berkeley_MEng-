@@ -200,7 +200,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     def add_to_mix(vol_uL, src, label):
         protocol.comment(f"Add {label}: {vol_uL} uL")
-        p20.pick_up_tip(tiprack_20a['C2'])
+        p20.pick_up_tip(tiprack_20a['B3'])
         p20.move_to(src.top())
         p20.move_to(src.bottom(2), speed=20)
         p20.aspirate(vol_uL, src.bottom(1)) 
