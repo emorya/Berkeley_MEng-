@@ -249,10 +249,10 @@ def run(protocol: protocol_api.ProtocolContext):
  ]
 
      # slower for 1 uL
-     p20.flow_rate.aspirate = 3
-     p20.flow_rate.dispense = 3
+    p20.flow_rate.aspirate = 3
+    p20.flow_rate.dispense = 3
 
-     for well in yifeng_wells:
+    for well in yifeng_wells:
          p20.pick_up_tip()
          p20.move_to(well.top())
          p20.move_to(well.bottom(0.5), speed=20)
