@@ -199,9 +199,6 @@ def run(protocol: protocol_api.ProtocolContext):
     vol_scaffold = 16.66
     vol_buffer10x = 2.10
     vol_water = 2.24
-    
-#Function for adding each reagent!
-p20.start_at_tip(tip_rack_1['C2'])
 
     def add_to_mix(vol_uL, src, label):
         protocol.comment(f"Add {label}: {vol_uL} uL")
