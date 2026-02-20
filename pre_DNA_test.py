@@ -208,7 +208,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
         p20.move_to(dest_tube.top(), speed=80)
         p20.move_to(dest_tube.bottom(2), speed=20)
-        p20.dispense(vol_uL + 1.0, dest_tube.bottom(2))
+        p20.dispense(vol_uL, dest_tube.bottom(2))
         # p20.blow_out(dest_tube.top(-1.5))
         # p20.blow_out(dest_tube.top(-1))
         p20.blow_out(dest_tube.top())
@@ -260,7 +260,7 @@ def run(protocol: protocol_api.ProtocolContext):
          p20.move_to(well.top(), speed=60)
 
          p20.move_to(dest_tube.bottom(2), speed=80)
-         p20.dispense(2, dest_tube.bottom(2))
+         p20.dispense(1, dest_tube.bottom(2))
          # p20.blow_out(dest_tube.top(-1.5))
          # p20.blow_out(dest_tube.top(-1))
          p20.blow_out(dest_tube.top())             
@@ -368,7 +368,7 @@ def run(protocol: protocol_api.ProtocolContext):
         p20.move_to(dst.bottom(1.5), speed=Z_SLOW)
 
     # Dispense + blowout
-        p20.dispense(6, dst.bottom(0.5))
+        p20.dispense(5, dst.bottom(0.5))
         p20.blow_out(dst.top(-2)) #this may need to be changed !! 
 
         p20.drop_tip()
