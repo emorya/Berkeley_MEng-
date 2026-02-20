@@ -116,8 +116,6 @@ def run(protocol: protocol_api.ProtocolContext):
     p20.flow_rate.aspirate = 7.56
     p20.flow_rate.dispense = 7.56
 
-    p20.start_at_tip(tip_rack_1['C2'])
-
     # Turn the lights on!
     protocol.set_rail_lights(True)
     
@@ -202,8 +200,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     def add_to_mix(vol_uL, src, label):
         protocol.comment(f"Add {label}: {vol_uL} uL")
-        # Example: Start at column 3, row A
-        p20.pick_up_tip()
+        p20.pick_up_tip(tiprack_20a['C2'])
         p20.move_to(src.top())
         p20.move_to(src.bottom(2), speed=20)
         p20.aspirate(vol_uL, src.bottom(1)) 
