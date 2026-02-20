@@ -199,7 +199,7 @@ def run(protocol: protocol_api.ProtocolContext):
     vol_water = 2.24
 
     #THIS SHIT BETTER WORK 
-    p20.starting_tip = tiprack_20a['B3']
+    p20.starting_tip = tiprack_20a['F3']
 
     def add_to_mix(vol_uL, src, label):
         protocol.comment(f"Add {label}: {vol_uL} uL")
@@ -266,7 +266,6 @@ def run(protocol: protocol_api.ProtocolContext):
          p20.dispense(1, dest_tube.bottom(2))
          # p20.blow_out(dest_tube.top(-1.5))
          # p20.blow_out(dest_tube.top(-1)) 
-         p20.touch_tip()
          p20.blow_out(dest_tube.top()) 
          p20.drop_tip()
 
