@@ -267,8 +267,8 @@ def run(protocol: protocol_api.ProtocolContext):
          p20.drop_tip()
 
    
-     p20.flow_rate.aspirate = 7.56
-     p20.flow_rate.dispense = 7.56
+    p20.flow_rate.aspirate = 7.56
+    p20.flow_rate.dispense = 7.56
 
 
     
@@ -277,16 +277,16 @@ def run(protocol: protocol_api.ProtocolContext):
 # #     # ----------------------------- ---------------------
 #     protocol.comment("=== Step 2 : DNAMix Plate → Thermocycler transfer ===")
         
-     tc_mod.open_lid()
+    tc_mod.open_lid()
         
-     xfer_to_tcplate_uL = 10
+    xfer_to_tcplate_uL = 10
     
-     tc_dest_wells = [tc_plate[f"A{i}"] for i in range(1, 6)]
+    tc_dest_wells = [tc_plate[f"A{i}"] for i in range(1, 6)]
     
      # Choose staple source wells from the 384-well plate (example: A1–A6)
-     src = dna_mix_tube["A6"]
+    src = dna_mix_tube["A6"]
     
-     for dest in tc_dest_wells:
+    for dest in tc_dest_wells:
          p20.pick_up_tip()
          p20.aspirate(xfer_to_tcplate_uL, src.bottom(1))
          p20.dispense(xfer_to_tcplate_uL, dest.bottom(2))
@@ -307,36 +307,36 @@ def run(protocol: protocol_api.ProtocolContext):
     
 
          # --- Thermocycler profile ---
-     protocol.comment("=== Thermocycler profile (65°C → 20°C) ===")
+    protocol.comment("=== Thermocycler profile (65°C → 20°C) ===")
     
-     tc_mod.set_lid_temperature(100)
-     tc_mod.close_lid()
+    tc_mod.set_lid_temperature(100)
+    tc_mod.close_lid()
     
-     profile = [
+    profile = [
          {"temperature": round(65 - 0.1 * i, 1), "hold_time_seconds": 12}
          for i in range(0, 451)   # 450 steps: 65.0 → 20.0
      ]
     
-     tc_mod.execute_profile(
+    tc_mod.execute_profile(
          steps=profile,
          repetitions=1,
          block_max_volume=60
      )
     
-     tc_mod.open_lid()
-     tc_mod.deactivate_lid()
-     tc_mod.deactivate_block()
+    tc_mod.open_lid()
+    tc_mod.deactivate_lid()
+    tc_mod.deactivate_block()
 
 
-     tc_mod.execute_profile(
+    tc_mod.execute_profile(
          steps=profile,
          repetitions=1,
          block_max_volume=60
      )
 
-     tc_mod.open_lid()
-     tc_mod.deactivate_lid()
-     tc_mod.deactivate_block()
+    tc_mod.open_lid()
+    tc_mod.deactivate_lid()
+    tc_mod.deactivate_block()
 
 
 
