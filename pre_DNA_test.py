@@ -90,6 +90,8 @@ MINIONE_6_WELL_DEF = {
 }
 
 
+
+
 Z_FAST = 25     # mm/s — approach
 Z_SLOW = 8      # mm/s — final descent
 
@@ -113,6 +115,8 @@ def run(protocol: protocol_api.ProtocolContext):
     # This is how fast our pipette take in and push out fluid 
     p20.flow_rate.aspirate = 7.56
     p20.flow_rate.dispense = 7.56
+
+    p20.start_at_tip(tip_rack_1['C2'])
 
     # Turn the lights on!
     protocol.set_rail_lights(True)
