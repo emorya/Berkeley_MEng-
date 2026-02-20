@@ -197,9 +197,11 @@ def run(protocol: protocol_api.ProtocolContext):
     vol_water = 2.24
     
 #Function for adding each reagent!
+     p20.start_at_tip(tip_rack_1['C2'])
 
     def add_to_mix(vol_uL, src, label):
         protocol.comment(f"Add {label}: {vol_uL} uL")
+        # Example: Start at column 3, row A
         p20.pick_up_tip()
         p20.move_to(src.top())
         p20.move_to(src.bottom(2), speed=20)
