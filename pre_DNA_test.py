@@ -359,7 +359,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     #Try once and remove if you don't like it 
 
-        p20.air_gap(1.0)
+        #p20.air_gap(1.0)
 
     # Move above destination (normal XY, controlled Z)
         p20.move_to(dst.top(), speed=Z_FAST)
