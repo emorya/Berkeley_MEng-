@@ -3,7 +3,7 @@ from opentrons import protocol_api
 from itertools import cycle
 
 metadata = {
-    "protocolName":"Start at C2 Liquid retention test: FULL RUN with Yifeng picklist for 384 plate",
+    "protocolName":"Start at B3 Liquid retention test: FULL RUN with Yifeng picklist for 384 plate",
     "author": "TiLab",
     "description": "1) Adding reagents to destination tube: TAE Buffer, Water, M18 Scaffold 2) Adding dna from Picklist to destination tube, Putting into Thermocycler, 3)Thermocycler to Gel Electrophoresis ",
 }
@@ -199,7 +199,7 @@ def run(protocol: protocol_api.ProtocolContext):
     vol_water = 2.24
 
     #THIS SHIT BETTER WORK 
-    p20.starting_tip = tiprack_20a['C2']
+    p20.starting_tip = tiprack_20a['B3']
 
     def add_to_mix(vol_uL, src, label):
         protocol.comment(f"Add {label}: {vol_uL} uL")
