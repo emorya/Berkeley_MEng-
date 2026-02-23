@@ -3,7 +3,7 @@ from opentrons import protocol_api
 from itertools import cycle
 
 metadata = {
-    "protocolName": "MOthER FUCKING Liquid retention test: FULL RUN with Yifeng picklist for 384 plate",
+    "protocolName": :"Start at C2 Liquid retention test: FULL RUN with Yifeng picklist for 384 plate",
     "author": "TiLab",
     "description": "1) Adding reagents to destination tube: TAE Buffer, Water, M18 Scaffold 2) Adding dna from Picklist to destination tube, Putting into Thermocycler, 3)Thermocycler to Gel Electrophoresis ",
 }
@@ -199,7 +199,7 @@ def run(protocol: protocol_api.ProtocolContext):
     vol_water = 2.24
 
     #THIS SHIT BETTER WORK 
-    p20.starting_tip = tiprack_20a['A1']
+    p20.starting_tip = tiprack_20a['C2']
 
     def add_to_mix(vol_uL, src, label):
         protocol.comment(f"Add {label}: {vol_uL} uL")
@@ -245,7 +245,7 @@ def run(protocol: protocol_api.ProtocolContext):
          # "K3","K4","K6","K8","K9","K10","K11",
          # "L3","L6","L8","L10","L11",
          "M2","M3","M5","M6","M7","M8","M10","M11",
-         "N2","N3","N4","N6","N7","N8","N9","N10","G9","N11",
+         "N2","N3","N4","N6","N7","N8","N9","N10","N11",
          "O3","O5","O6","O8","O9","O10","O11",
          "P3","P5","P8","P9","P10"
      ]
@@ -267,6 +267,7 @@ def run(protocol: protocol_api.ProtocolContext):
          # p20.blow_out(dest_tube.top(-1.5))
          # p20.blow_out(dest_tube.top(-1)) 
          p20.blow_out(dest_tube.top()) 
+         p20.blow_out(dest_tube.top())
          p20.drop_tip()
 
    
