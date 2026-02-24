@@ -3,7 +3,7 @@ from opentrons import protocol_api
 from itertools import cycle
 
 metadata = {
-    "protocolName":"Start at B3 Liquid retention test: FULL RUN with Yifeng picklist for 384 plate",
+    "protocolName":"Start at G7 Liquid retention test: FULL RUN with Yifeng picklist for 384 plate",
     "author": "TiLab",
     "description": "1) Adding reagents to destination tube: TAE Buffer, Water, M18 Scaffold 2) Adding dna from Picklist to destination tube, Putting into Thermocycler, 3)Thermocycler to Gel Electrophoresis ",
 }
@@ -199,7 +199,7 @@ def run(protocol: protocol_api.ProtocolContext):
     vol_water = 2.24
 
     #THIS SHIT BETTER WORK 
-    p20.starting_tip = tiprack_20a['B3']
+    p20.starting_tip = tiprack_20a['G7']
 
     def add_to_mix(vol_uL, src, label):
         protocol.comment(f"Add {label}: {vol_uL} uL")
@@ -244,10 +244,11 @@ def run(protocol: protocol_api.ProtocolContext):
          # "J2","J4","J5","J6","J7","J9","J10","J11",
          # "K3","K4","K6","K8","K9","K10","K11",
          # "L3","L6","L8","L10","L11",
-         "M2","M3","M5","M6","M7","M8","M10","M11",
-         "N2","N3","N4","N6","N7","N8","N9","N10","N11",
-         "O3","O5","O6","O8","O9","O10","O11",
-         "P3","P5","P8","P9","P10"
+         # "M2","M3","M5","M6","M7","M8","M10","M11",
+         # "N2","N3","N4","N6","N7","N8","N9","N10","N11",
+         # "O3","O5","O6","O8","O9","O10","O11",
+         # "P3","P5","P8","P9",
+         "P10"
      ]
  ]
 
@@ -324,20 +325,9 @@ def run(protocol: protocol_api.ProtocolContext):
     tc_mod.execute_profile(
          steps=profile,
          repetitions=1,
-         block_max_volume=60
+         block_max_volume=65
      )
     
-    tc_mod.open_lid()
-    tc_mod.deactivate_lid()
-    tc_mod.deactivate_block()
-
-
-    tc_mod.execute_profile(
-         steps=profile,
-         repetitions=1,
-         block_max_volume=60
-     )
-
     tc_mod.open_lid()
     tc_mod.deactivate_lid()
     tc_mod.deactivate_block()
@@ -360,10 +350,6 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # Aspirate
         p20.aspirate(5, src.bottom(1))
-
-    #Try once and remove if you don't like it 
-
-        #p20.air_gap(1.0)
 
     # Move above destination (normal XY, controlled Z)
         p20.move_to(dst.top(), speed=Z_FAST)
