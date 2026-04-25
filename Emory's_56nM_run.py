@@ -132,7 +132,7 @@ CONDITION_VOLS = [
 
 
 CONDITION_TUBE_WELLS = ['B1','B2']
-MASTER_MIX_VOL = 14.2   # uL per condition (4.20 buffer + 10.00 scaffold)
+MASTER_MIX_VOL = 7.10   # uL per condition (4.20 buffer + 10.00 scaffold)
 TOTAL_VOL = 42.0
 
 
