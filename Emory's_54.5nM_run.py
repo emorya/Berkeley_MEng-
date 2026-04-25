@@ -221,7 +221,7 @@ def run(protocol: protocol_api.ProtocolContext):
     scaffold_prep_tube = dna_mix_tube["A4"]   # robot fills: scaffold + dye for gel lane
     loading_dye_tube   = dna_mix_tube["D2"]
     ladder_tube        = dna_mix_tube["D3"]
-    master_pool_tube   = tube_rack_11["A1"]    # staple pool ~54.35 nM in 15 mL Falcon
+    master_pool_tube   = dna_mix_tube["D5"]   # staple pool ~54.35 nM in 15 mL Falcon
 
     condition_tubes = [dna_mix_tube[w] for w in CONDITION_TUBE_WELLS]
     tc_dest_wells   = [tc_plate[f"A{i}"] for i in range(1, len(CONDITION_VOLS) + 1)]
