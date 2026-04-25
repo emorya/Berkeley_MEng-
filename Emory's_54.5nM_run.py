@@ -122,7 +122,10 @@ Z_SLOW = 8
 #   A1 = 10x TAE with 125 mM MgCl2   A2 = scaffold 42 nM   A3 = MQ water
 #   A4 = empty (scaffold prep)        A5 = empty            A6 = empty (scaffold working stock)
 #   B1-B2 = empty condition tubes
-#   D2 = loading dye, D3 = ladder, D5 = DNA STAPLES (55.6 nM pool)
+#   D2 = loading dye, D3 = ladder
+#
+# Falcon rack (slot 11):
+#   A1 = DNA STAPLES (54.35 nM pool, 2500/46) in 15 mL conical
 #
 # ============================================================
 # MATH CHECK (per 42 uL reaction)
@@ -133,9 +136,9 @@ Z_SLOW = 8
 #
 # Buffer: 4.2 uL of 10x stock → 10 * 4.2 / 42 = 1.0x TAE, 12.5 mM MgCl2  ✓
 #
-# Staple pool (D5): ~55.6 nM per staple (2.5 uM / 45 staples)
-#   1:2 (10 nM): 55.6 * 7.5 / 42 = 9.9 nM  ✓
-#   1:5 (25 nM): 55.6 * 18.75 / 42 = 24.8 nM  ✓
+# Staple pool (D5): ~54.35 nM per staple (2500 nM / 46 staples)
+#   1:2 (10 nM): 54.35 * 7.73 / 42 = 10.0 nM  ✓
+#   1:5 (25 nM): 54.35 * 19.32 / 42 = 25.0 nM  ✓
 #
 # Water tops up to 42 uL total.
 #
@@ -146,12 +149,12 @@ BUFFER_VOL   = 4.2     # uL of 10x buffer per condition
 TOTAL_VOL    = 42.0
 
 CONDITION_VOLS = [
-    (5, "1:2", 10, "master",  7.50, 25.10),   # water = 42 - 5.0 - 4.2 - 7.50 = 25.30 → 25.10 (rounding)
-    (5, "1:5", 25, "master", 18.75, 14.05),   # water = 42 - 5.0 - 4.2 - 18.75 = 14.05
+    (5, "1:2", 10, "master",  7.73, 25.07),   # water = 42 - 5.0 - 4.2 - 7.73 = 25.07
+    (5, "1:5", 25, "master", 19.32, 13.48),   # water = 42 - 5.0 - 4.2 - 19.32 = 13.48
 ]
 # Verify totals:
-#   Cond 1: 5.0 + 4.2 + 7.50 + 25.30 = 42.0
-#   Cond 2: 5.0 + 4.2 + 18.75 + 14.05 = 42.0
+#   Cond 1: 5.0 + 4.2 + 7.73 + 25.07 = 42.0
+#   Cond 2: 5.0 + 4.2 + 19.32 + 13.48 = 42.0
 
 CONDITION_TUBE_WELLS = ['B1', 'B2']
 
@@ -218,7 +221,7 @@ def run(protocol: protocol_api.ProtocolContext):
     scaffold_prep_tube = dna_mix_tube["A4"]   # robot fills: scaffold + dye for gel lane
     loading_dye_tube   = dna_mix_tube["D2"]
     ladder_tube        = dna_mix_tube["D3"]
-    master_pool_tube   = tube_rack_11["A1"]   # staple pool ~55.6 nM
+    master_pool_tube   = tube_rack_11["A1"]    # staple pool ~54.35 nM in 15 mL Falcon
 
     condition_tubes = [dna_mix_tube[w] for w in CONDITION_TUBE_WELLS]
     tc_dest_wells   = [tc_plate[f"A{i}"] for i in range(1, len(CONDITION_VOLS) + 1)]
@@ -280,7 +283,7 @@ def run(protocol: protocol_api.ProtocolContext):
         p20_xfer(BUFFER_VOL, buffer10x_tube, dest)
 
         # 3) Staple pool
-        p20_xfer(st_vol, pool_src, dest, src_z=1 if pool == "master" else 2)
+        p20_xfer(st_vol, pool_src, dest, src_z=0.5)
 
         # 4) Water
         if w_vol > 0:
