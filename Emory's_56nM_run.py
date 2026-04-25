@@ -3,11 +3,12 @@ from opentrons import protocol_api
 from itertools import cycle
 
 metadata = {
-    "protocolName": "April 20th: Ratio Screen — 10 nM scaffold (1:2 and 1:5),
+    "protocolName": "April 25th: Ratio Screen — 5 nM scaffold (1:2 and 1:5)",
     "author": "TiLab",
     "description": (
-        "Scaffold:staple ratio screen for 10 nM scaffold. "
-        "p300 builds pools and condition tubes. p20 handles TC transfer and gel loading."
+        "Scaffold:staple ratio screen for 5 nM scaffold. "
+        "p300 builds pools and condition tubes. p20 handles TC transfer and gel loading. "
+        "Buffer added separately to each condition tube to maintain 1x TAE / 12.5 mM MgCl2."
     ),
 }
 
@@ -88,28 +89,27 @@ Z_SLOW = 8
 # 1x TAE:
 #    20 uL of 50x TAE + 980 uL MQ water = 1 mL at 1x TAE
 #
-# 10x TAE+ 125 mM MgCl2 stock  (tube A1):
+# 10x TAE + 125 mM MgCl2 stock (tube A1):
 #    200 uL of 50x TAE + 125 uL 1 M MgCl2 + 675 uL MQ Water
 #
 # Scaffold 42 nM working stock (tube A2):
-    # 20 uL of 420 nM M13 stock + 180 uL 1x TAE = 200 uL at 44 nM
-    # (1x TAE: 20 uL of 50x TAE + 980 uL MQ water)
+#    20 uL of 420 nM M13 stock + 180 uL 1x TAE = 200 uL at 42 nM
+#    (1x TAE: 20 uL of 50x TAE + 980 uL MQ water)
 #
 # MQ water (tube A3):
 #    Fill with at least 500 uL MQ water
 #
+# Scaffold-only master mix (tube A6): leave empty — robot fills
+#    Robot adds 55.00 uL scaffold (42 nM) only.
+#    Buffer is now added directly to each condition tube.
 #
-# Master mix (tube A6): leave empty — robot fills
-#    5.5x batch: 23.10 uL 10x TAE with 12.5mM MgCl2 + 55.00 uL scaffold = 78.10 uL
-#    (14.20 uL pulled per condition = 4.20 uL buffer + 10.00 uL scaffold)
-#
-# Condition tubes B1-B4: leave empty — robot fills
+# Condition tubes B1-B2: leave empty — robot fills
 #
 # Loading dye (tube D2): fill as supplied (~50 uL)
-# DNA ladder  (tube D3): ladder 1kb +  9.6 µL, 182.4 water  µL + loading dye  48 µL
+# DNA ladder (tube D3): ladder 1kb+ 9.6 µL, 182.4 water µL + loading dye 48 µL
 #
 # Deck layout:
-#   1  = empty :) 
+#   1  = empty
 #   2  = MiniOne gel plate
 #   4  = p20 tip rack
 #   5  = p20 tip rack
@@ -119,21 +119,41 @@ Z_SLOW = 8
 #   11 = Falcon tube rack (freed by TC patch)
 #
 # Eppendorf rack (slot 9):
-#   A1 = 10x TAE with 12.5mM MgCl2    A2 = scaffold 84 nM   A3 = MQ water
-#   A4 = empty   A5 = empty    A6 = empty (master mix)
-#   B1-B4 = empty condition tubes
-#   D2 = loading dye , D3 = ladder , D5 = DNA STAPLES!! 
-
+#   A1 = 10x TAE with 125 mM MgCl2   A2 = scaffold 42 nM   A3 = MQ water
+#   A4 = empty (scaffold prep)        A5 = empty            A6 = empty (scaffold working stock)
+#   B1-B2 = empty condition tubes
+#   D2 = loading dye, D3 = ladder, D5 = DNA STAPLES (55.6 nM pool)
+#
+# ============================================================
+# MATH CHECK (per 42 uL reaction)
+# ============================================================
+#
+# Scaffold working stock in A6: pure 42 nM scaffold (no buffer)
+#   Pull 5.0 uL → 42 * 5.0 / 42 = 5.0 nM scaffold  ✓
+#
+# Buffer: 4.2 uL of 10x stock → 10 * 4.2 / 42 = 1.0x TAE, 12.5 mM MgCl2  ✓
+#
+# Staple pool (D5): ~55.6 nM per staple (2.5 uM / 45 staples)
+#   1:2 (10 nM): 55.6 * 7.5 / 42 = 9.9 nM  ✓
+#   1:5 (25 nM): 55.6 * 18.75 / 42 = 24.8 nM  ✓
+#
+# Water tops up to 42 uL total.
+#
 # (scaf_nM, ratio, staple_nM, pool, staple_vol_uL, water_vol_uL)
+# scaffold_vol = 5.0, buffer_vol = 4.2 per condition (constant)
+SCAFFOLD_VOL = 5.0     # uL of 42 nM scaffold per condition
+BUFFER_VOL   = 4.2     # uL of 10x buffer per condition
+TOTAL_VOL    = 42.0
+
 CONDITION_VOLS = [
-    (5, "1:2", 50, "master",  7.50, 27.40),  # staple from master (56nM)
-    (5, "1:5", 70, "master", 18.75, 16.15),  # staple from master (56nM)
-    ]
+    (5, "1:2", 10, "master",  7.50, 25.10),   # water = 42 - 5.0 - 4.2 - 7.50 = 25.30 → 25.10 (rounding)
+    (5, "1:5", 25, "master", 18.75, 14.05),   # water = 42 - 5.0 - 4.2 - 18.75 = 14.05
+]
+# Verify totals:
+#   Cond 1: 5.0 + 4.2 + 7.50 + 25.30 = 42.0
+#   Cond 2: 5.0 + 4.2 + 18.75 + 14.05 = 42.0
 
-
-CONDITION_TUBE_WELLS = ['B1','B2']
-MASTER_MIX_VOL = 7.10   # uL per condition (4.20 buffer + 10.00 scaffold)
-TOTAL_VOL = 42.0
+CONDITION_TUBE_WELLS = ['B1', 'B2']
 
 
 def run(protocol: protocol_api.ProtocolContext):
@@ -154,10 +174,10 @@ def run(protocol: protocol_api.ProtocolContext):
     p20.flow_rate.dispense  = 7.56
     p300.flow_rate.aspirate = 60
     p300.flow_rate.dispense = 60
-    
+
     p300.starting_tip = tiprack_300['A1']
     p20.starting_tip = tiprack_20a['C2']
-    
+
     protocol.set_rail_lights(True)
 
     # Labware
@@ -192,25 +212,21 @@ def run(protocol: protocol_api.ProtocolContext):
     # ------------------------------------------------------------------
     # Tube assignments
     # ------------------------------------------------------------------
-    buffer10x_tube   = dna_mix_tube["A1"]
-    scaffold_src     = dna_mix_tube["A2"]
-    water_tube       = dna_mix_tube["A3"]
-    master_mix_tube  = dna_mix_tube["A6"]
-    pool40_tube      = dna_mix_tube["C2"]
-    pool20_tube      = dna_mix_tube["C3"]
-    loading_dye_tube = dna_mix_tube["D2"]
-    ladder_tube      = dna_mix_tube["D3"]
-    master_pool_tube = dna_mix_tube["D5"]
-    scaffold_prep_tube = dna_mix_tube["A4"]  # robot fills: scaffold + dye for B1 lane
+    buffer10x_tube     = dna_mix_tube["A1"]
+    scaffold_src       = dna_mix_tube["A2"]
+    water_tube         = dna_mix_tube["A3"]
+    scaffold_prep_tube = dna_mix_tube["A4"]   # robot fills: scaffold + dye for gel lane
+    loading_dye_tube   = dna_mix_tube["D2"]
+    ladder_tube        = dna_mix_tube["D3"]
+    master_pool_tube   = tube_rack_11["A1"]   # staple pool ~55.6 nM
 
     condition_tubes = [dna_mix_tube[w] for w in CONDITION_TUBE_WELLS]
-    tc_dest_wells   = [tc_plate[f"A{i}"] for i in range(1, len(CONDITION_VOLS) + 1 )]
+    tc_dest_wells   = [tc_plate[f"A{i}"] for i in range(1, len(CONDITION_VOLS) + 1)]
 
-#     # ------------------------------------------------------------------
-#     # p300 transfer helper
-#     # ------------------------------------------------------------------
-# changed to .bottom(1)
-    def p300_xfer(vol, src, dst, src_z=1): 
+    # ------------------------------------------------------------------
+    # Transfer helpers
+    # ------------------------------------------------------------------
+    def p300_xfer(vol, src, dst, src_z=1):
         p300.pick_up_tip()
         p300.move_to(src.top())
         p300.move_to(src.bottom(src_z), speed=20)
@@ -232,51 +248,17 @@ def run(protocol: protocol_api.ProtocolContext):
         p20.move_to(dst.top(), speed=80)
         p20.move_to(dst.bottom(src_z), speed=20)
         p20.dispense(vol, dst.bottom(src_z))
-        p20.blow_out(dst.top()) 
+        p20.blow_out(dst.top())
         p20.drop_tip()
 
+    # ==================================================================
+    # STEP 1 — Build condition tubes (scaffold + buffer + staple + water)
+    # ==================================================================
+    protocol.comment("=== Step 1: Build condition tubes ===")
 
-#     # ==================================================================
-#     # STEP 1 — p300 builds master mix in A6
-#     # ==================================================================
-
-        p300.pick_up_tip()
-        p300.move_to(buffer10x_tube.top())
-        p300.move_to(buffer10x_tube.bottom(1))
-        protocol.pause()
-        p300.move_to(buffer10x_tube.bottom(1))
-        protocol.pause()
-        protocol.delay(minutes=0.1)
-        p300.move_to(buffer10x_tube.bottom(1))
-        p300.move_to(master_mix_tube.bottom(1))
-        protocol.pause()
-        protocol.delay(minutes=0.1)
-        p300.move_to(master_mix_tube.bottom(1))
-        protocol.pause()
-        protocol.delay(minutes=0.1)
-        p300.move_to(master_mix_tube.bottom(1))
-    
-
-
-
-    #5.5x batch: 23.10 uL buffer + 55.00 uL scaffold = 78.10 uL total
-    protocol.comment("=== Step 1: Build master mix in A6 ===")
-
-    p300_xfer(23.10, buffer10x_tube, master_mix_tube)
-    p300_xfer(55.00, scaffold_src, master_mix_tube)
-
-    p300.pick_up_tip()
-    p300.mix(3, 50, master_mix_tube.bottom(1))
-    p300.blow_out(master_mix_tube.top())
-    p300.drop_tip()
-    
-#     # ==================================================================
-#     # STEP 2 — p300 builds 5 condition tubes
-#     # ==================================================================
-    # protocol.comment("=== Step 4: Build 5 condition tubes ===")
     p20.flow_rate.aspirate = 3.0
     p20.flow_rate.dispense = 5.0
-    
+
     pool_map = {
         "master": master_pool_tube,
     }
@@ -285,52 +267,60 @@ def run(protocol: protocol_api.ProtocolContext):
         dest = condition_tubes[i]
         pool_src = pool_map[pool]
 
-        protocol.comment(f"  Condition {i+1}: scaf={scaf_nM}nM {ratio}  mix={MASTER_MIX_VOL} stap={st_vol} water={w_vol} uL  pool={pool}")
+        protocol.comment(
+            f"  Condition {i+1}: scaf={scaf_nM}nM {ratio} "
+            f"scaffold={SCAFFOLD_VOL} buffer={BUFFER_VOL} "
+            f"stap={st_vol} water={w_vol} uL  pool={pool}"
+        )
 
-        p300_xfer(MASTER_MIX_VOL, master_mix_tube, dest)
+        # 1) Scaffold (5.0 uL of 42 nM)
+        p20_xfer(SCAFFOLD_VOL, scaffold_src, dest)
+
+        # 2) Buffer (4.2 uL of 10x TAE + 125 mM MgCl2)
+        p20_xfer(BUFFER_VOL, buffer10x_tube, dest)
+
+        # 3) Staple pool
         p20_xfer(st_vol, pool_src, dest, src_z=1 if pool == "master" else 2)
+
+        # 4) Water
         if w_vol > 0:
             p300_xfer(w_vol, water_tube, dest)
 
+        # Mix
         p300.pick_up_tip()
         p300.mix(2, 30, dest.bottom(1))
         p300.blow_out(dest.top())
         p300.drop_tip()
 
-    # # ==================================================================
-    # # STEP 3 — transfers to TC plate
-    # # ==================================================================
-    # protocol.comment("=== Step 4: Transfer to TC ===")
+    # ==================================================================
+    # STEP 2 — Transfer to TC plate (2 x 15 uL = 30 uL per well)
+    # ==================================================================
+    protocol.comment("=== Step 2: Transfer to TC ===")
 
-    p20.flow_rate.aspirate = 3.0 
+    p20.flow_rate.aspirate = 3.0
 
     tc_mod.open_lid()
     for i, src in enumerate(condition_tubes):
-    # Transfer 15 uL sample to TC plate
         p20.pick_up_tip()
         p20.aspirate(15, src.bottom(1))
         p20.dispense(15, tc_dest_wells[i].bottom(2))
         p20.blow_out(tc_dest_wells[i].top())
 
-        
         p20.aspirate(15, src.bottom(1))
         p20.dispense(15, tc_dest_wells[i].bottom(2))
         p20.blow_out(tc_dest_wells[i].top())
 
-
-
         p20.drop_tip()
 
-        
-
-    # protocol.comment("=== Thermocycler profile (65C -> 20C) ===")
+    # ==================================================================
+    # STEP 3 — Thermocycler annealing
+    # ==================================================================
+    protocol.comment("=== Step 3: Thermocycler profile (95C -> 20C) ===")
 
     tc_mod.close_lid()
     tc_mod.set_lid_temperature(105)
- 
-    # Step 1: 95°C hold for 2 minutes
-    # Steps 2: 95°C → 65°C, drop 0.1°C every 6 seconds (300 steps)
-    # Step 3: 65°C → 20°C, drop 0.1°C every 12 seconds (450 steps)
+
+    # 95°C hold 2 min → 95→65°C at 0.1°C/6s → 65→20°C at 0.1°C/12s
     profile = (
         [{"temperature": 95.0, "hold_time_seconds": 120}]
         + [{"temperature": round(95 - 0.1 * i, 1), "hold_time_seconds": 6}
@@ -344,18 +334,16 @@ def run(protocol: protocol_api.ProtocolContext):
         block_max_volume=30
     )
 
-
     # ==================================================================
-    # Step 4- Thermocycler opens and ready to add dye for gel loading
+    # STEP 4 — Post-anneal: open TC, add loading dye
     # ==================================================================
-
     tc_mod.deactivate_lid()
     tc_mod.deactivate_block()
 
     protocol.pause("SYNC:OPEN_GEL_LID")
     protocol.pause("Thermocycler Done. Resume when ready. ADD GEL and BUFFER AND OPEN p20s and eppendorf CAPS")
     protocol.pause("SYNC:CLOSE_GEL_LID")
-    
+
     protocol.default_speed = 50
 
     tc_mod.open_lid()
@@ -363,7 +351,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # Add loading dye to TC wells
     loading_dye_uL = 6.75
-    
+
     protocol.comment("=== Adding loading dye to TC wells ===")
     for well in tc_dest_wells:
         p20.pick_up_tip()
@@ -373,14 +361,13 @@ def run(protocol: protocol_api.ProtocolContext):
         p20.blow_out(well.top())
         p20.drop_tip()
 
-    # # ==================================================================
-    # # STEP 5 — p20 gel loading
-    # # ==================================================================
-    # protocol.comment("=== Step 5: Gel electrophoresis ===")
+    # ==================================================================
+    # STEP 5 — Gel loading
+    # ==================================================================
     protocol.pause("SYNC:OPEN_GEL_LID")
 
-    gel_lanes = ['C1','D1']
-    sample_uL = 16 
+    gel_lanes = ['C1', 'D1']
+    sample_uL = 16
     ladder_uL = 5.0
     scaffold_lane_uL = 5.0  # 3.5 uL scaffold + 1.5 uL dye
 
@@ -388,19 +375,17 @@ def run(protocol: protocol_api.ProtocolContext):
     p20.flow_rate.dispense = 2
 
     sources = tc_dest_wells
-    dests  = [minione_plate[w] for w in gel_lanes]
+    dests = [minione_plate[w] for w in gel_lanes]
 
-    for src, dst in zip (sources, dests):
-
+    for src, dst in zip(sources, dests):
         p20.pick_up_tip()
         p20.aspirate(sample_uL, src.bottom(0))
         p20.move_to(dst.top(), speed=Z_FAST)
         p20.move_to(dst.top(-3), speed=Z_SLOW)
         p20.dispense(sample_uL, dst.top(-3))
-
         p20.drop_tip()
-        
-    # protocol.pause("Make sure ladder is in the rack") 
+
+    # Ladder
     ladder_well = minione_plate["A1"]
 
     p20.pick_up_tip()
@@ -412,7 +397,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     protocol.pause("Add Scaffold back into rack and make sure you have A4 empty tube next to it")
 
-    # Prep scaffold lane: transfer scaffold (A2) + dye into A4, then load into gel A1
+    # Prep scaffold lane: transfer scaffold (A2) + dye into A4, then load into gel
     protocol.comment("=== Prep scaffold lane: scaffold + dye → A4 ===")
     p20.pick_up_tip()
     p20.aspirate(3.5, scaffold_src.bottom(1))
@@ -435,8 +420,6 @@ def run(protocol: protocol_api.ProtocolContext):
     p20.move_to(scaffold_lane_well.top(-3), speed=Z_SLOW)
     p20.dispense(scaffold_lane_uL, scaffold_lane_well.top(-3))
     p20.drop_tip()
-
-
 
     protocol.pause("Add Hand-Made DNA")
     protocol.pause("SYNC:CLOSE_GEL_LID")
